@@ -13,20 +13,54 @@ body {
   Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: rgb(82 73 73 / 11%);
+  background-color: #3b3b3b;
   color: #212121;
   line-height: 1.5;
 }
+img {
+  display: block;
+  max-width: 100%;
+}
+
+
+#search-form{
+  width: 100%;
+  height: 80px;
+  position: fixed;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 #search-form input{
+  margin-right: 10px;
   font: inherit;
   padding: 8px;
   max-width: 320px;
-  margin-bottom: 16px;
+  border-radius: 50px;
+  border: none;
 }
 
 #search-form button{
   font: inherit;
   padding: 8px;
-  margin-bottom: 16px;
+  width: 100px;
+  border: none;
+
+  border-radius: 50px;
+  background-color: #9a9a9a;
+}
+
+.loading {
+  display: none;
+  background-color: #c9c9c9;
+  width: 200px;
+  margin: 200px auto;
+  text-align: center;
+}
+
+.show {
+  display: block;
 }
