@@ -11,7 +11,9 @@ const form = getEl('#search-form');
 const loading = getEl('.loading');
 
 let pageCounter = 1;
+let pagesCount = 1
 let inputValue = '';
+let perPage = 40;
 
 const lightBox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
@@ -27,7 +29,7 @@ const getImages = (value) => {
       orientation: 'horizontal',
       safesearch: true,
       page: pageCounter,
-      per_page: 40,
+      per_page: perPage,
     },
   });
 };
@@ -39,7 +41,8 @@ form.addEventListener('submit', e => {
   pageCounter = 1;
   getImages(inputValue)
     .then(res => {
-      const{hits, totalHits}= res.data
+        const { hits, totalHits } = res.data;
+        pagesCount = Math.ceil(totalHits / perPage)
         if (hits.length === 0) {
           gallery.innerHTML = '';
           return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
@@ -66,28 +69,28 @@ const galleryMarkup = (data) => {
 };
 
 const loadMoreHandler = () => {
-  pageCounter++;
+        pageCounter++;
+
   getImages(inputValue)
     .then(res => {
-      const{hits, totalHits}= res.data
-      if (gallery.getElementsByTagName('a').length === totalHits) {
+      const { hits } = res.data;
+      loading.classList.add('show');
+        gallery.insertAdjacentHTML('beforeend', galleryMarkup(hits));
+        lightBox.refresh();
+      loading.classList.remove('show');
+      if (pagesCount === pageCounter) {
         return Notiflix.Notify.failure(`We're sorry, but you've reached the end of search results.`);
       }
-      loading.classList.add('show')
-      gallery.insertAdjacentHTML('beforeend', galleryMarkup(hits))
-      loading.classList.remove('show')
-      lightBox.refresh();
     });
 };
 
-window.addEventListener('scroll', _.throttle((e)=>{
-  let clientViewportHeight = document.querySelector('body').clientHeight
-  let position = clientViewportHeight - window.scrollY
-  if(position - window.innerHeight <= clientViewportHeight * 0.10){
-
-    loadMoreHandler(pageCounter)
+window.addEventListener('scroll', _.debounce(() => {
+  let clientViewportHeight = document.querySelector('body').clientHeight;
+  let position = clientViewportHeight - window.scrollY;
+  if (position - window.innerHeight <= clientViewportHeight * 0.10 && pageCounter < pagesCount) {
+    loadMoreHandler(pageCounter);
   }
-}, 300))
+}, 300));
 
 
 
