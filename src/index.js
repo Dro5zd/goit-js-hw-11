@@ -40,7 +40,6 @@ form.addEventListener('submit', e => {
   getImages(inputValue)
     .then(res => {
       const{hits, totalHits}= res.data
-      console.log(hits);
         if (hits.length === 0) {
           gallery.innerHTML = '';
           return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
@@ -81,7 +80,7 @@ const loadMoreHandler = () => {
     });
 };
 
-window.addEventListener('scroll', _.debounce((e)=>{
+window.addEventListener('scroll', _.throttle((e)=>{
   let clientViewportHeight = document.querySelector('body').clientHeight
   let position = clientViewportHeight - window.scrollY
   if(position - window.innerHeight <= clientViewportHeight * 0.10){
