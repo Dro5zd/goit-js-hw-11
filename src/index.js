@@ -39,12 +39,14 @@ form.addEventListener('submit', e => {
   pageCounter = 1;
   getImages(inputValue)
     .then(res => {
-        if (res.data.hits.length === 0) {
+      const{hits, totalHits}= res.data
+      console.log(hits);
+        if (hits.length === 0) {
           gallery.innerHTML = '';
           return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
         }
-        Notiflix.Notify.success(`Hooray! We found ${res.data.totalHits} images.`);
-        gallery.insertAdjacentHTML('beforeend', galleryMarkup(res.data.hits));
+        Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+        gallery.insertAdjacentHTML('beforeend', galleryMarkup(hits));
         lightBox.refresh();
       },
     )
@@ -68,11 +70,12 @@ const loadMoreHandler = () => {
   pageCounter++;
   getImages(inputValue)
     .then(res => {
-      if (gallery.getElementsByTagName('a').length === res.data.totalHits) {
+      const{hits, totalHits}= res.data
+      if (gallery.getElementsByTagName('a').length === totalHits) {
         return Notiflix.Notify.failure(`We're sorry, but you've reached the end of search results.`);
       }
       loading.classList.add('show')
-      gallery.insertAdjacentHTML('beforeend', galleryMarkup(res.data.hits))
+      gallery.insertAdjacentHTML('beforeend', galleryMarkup(hits))
       loading.classList.remove('show')
       lightBox.refresh();
     });
