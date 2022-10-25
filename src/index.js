@@ -27,10 +27,9 @@ const getImages = (value) => {
       orientation: 'horizontal',
       safesearch: true,
       page: pageCounter,
-      per_page: 20,
+      per_page: 40,
     },
   });
-
 };
 
 form.addEventListener('submit', e => {
