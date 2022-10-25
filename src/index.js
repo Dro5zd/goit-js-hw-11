@@ -8,16 +8,27 @@ const getEl = el => document.querySelector(el);
 
 const gallery = getEl('.gallery');
 const form = getEl('#search-form');
+const formBtn = getEl('#search-form button');
+const formInput = getEl('#search-form input');
 const loading = getEl('.loading');
 
 let pageCounter = 1;
-let pagesCount = 1
+let pagesCount = 1;
 let inputValue = '';
 let perPage = 40;
 
 const lightBox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
+});
+
+formInput.addEventListener('input', (e) => {
+  inputValue = e.target.value;
+  if (inputValue.length > 0) {
+    formBtn.removeAttribute('disabled');
+  } else {
+    formBtn.setAttribute('disabled', 'disabled');
+  }
 });
 
 const getImages = (value) => {
@@ -36,13 +47,12 @@ const getImages = (value) => {
 
 form.addEventListener('submit', e => {
   e.preventDefault();
-  inputValue = e.target.elements[0].value;
   gallery.innerHTML = '';
   pageCounter = 1;
   getImages(inputValue)
     .then(res => {
         const { hits, totalHits } = res.data;
-        pagesCount = Math.ceil(totalHits / perPage)
+        pagesCount = Math.ceil(totalHits / perPage);
         if (hits.length === 0) {
           gallery.innerHTML = '';
           return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
@@ -69,14 +79,14 @@ const galleryMarkup = (data) => {
 };
 
 const loadMoreHandler = () => {
-        pageCounter++;
+  pageCounter++;
 
   getImages(inputValue)
     .then(res => {
       const { hits } = res.data;
       loading.classList.add('show');
-        gallery.insertAdjacentHTML('beforeend', galleryMarkup(hits));
-        lightBox.refresh();
+      gallery.insertAdjacentHTML('beforeend', galleryMarkup(hits));
+      lightBox.refresh();
       loading.classList.remove('show');
       if (pagesCount === pageCounter) {
         return Notiflix.Notify.failure(`We're sorry, but you've reached the end of search results.`);
@@ -90,6 +100,7 @@ window.addEventListener('scroll', _.debounce(() => {
   if (position - window.innerHeight <= clientViewportHeight * 0.10 && pageCounter < pagesCount) {
     loadMoreHandler(pageCounter);
   }
+
 }, 300));
 
 
